@@ -1,0 +1,27 @@
+<div>
+  <div>
+    <input type="text" [(ngModel)]="searchText" placeholder="Поиск по имени" />
+    <button (click)="sortContacts()">Сортировать по имени</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let contact of filteredContacts()">
+        <td>{{ contact.firstName }} {{ contact.lastName }}</td>
+        <td>{{ contact.phone }}</td>
+        <td>{{ contact.email }}</td>
+        <td>
+          <button (click)="editContact(contact)">Редактировать</button>
+          <button (click)="deleteContact(contact.id)">Удалить</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
