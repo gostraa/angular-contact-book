@@ -1,70 +1,58 @@
-import { NgFor } from "@angular/common";
-import { Component } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, inject, OnInit } from "@angular/core";
+import { Store, select } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { Contact } from "../../models/contact.model";
+
+import { map, startWith } from "rxjs/operators";
+import { combineLatest } from "rxjs";
+import { selectAllContacts } from "../../core/selectors/contact.selectors";
+import { loadContacts } from "../../store/actions/contact.actions";
+import { CommonModule } from "@angular/common";
+import { EffectsModule } from "@ngrx/effects";
+import { contactReducer } from "../../store/redusers/contact.reducer";
 
 @Component({
   selector: "app-contact-list",
-  imports: [NgFor, FormsModule],
   templateUrl: "./contact-list.component.html",
-  styleUrl: "./contact-list.component.scss",
+  styleUrls: ["./contact-list.component.scss"],
+  imports: [CommonModule, EffectsModule],
 })
-export class ContactListComponent {
+export class ContactListComponent implements OnInit {
+  private store = inject(Store);
+
   searchText = "";
+  sortAscending = true;
 
-  contacts = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      phone: "+380123456789",
-      email: "john.doe@example.com",
-    },
-    {
-      id: 2,
-      firstName: "Jane",
-      lastName: "Smith",
-      phone: "+380987654321",
-      email: "jane.smith@example.com",
-    },
-    {
-      id: 3,
-      firstName: "Mike",
-      lastName: "Jordan",
-      phone: "+380112233445",
-      email: "mike.jordan@example.com",
-    },
-  ];
+  contacts$: Observable<Contact[]> = this.store.pipe(select(selectAllContacts));
 
-  filteredContacts() {
-    if (!this.searchText) {
-      return this.contacts;
-    }
-    return this.contacts.filter((contact) =>
-      `${contact.firstName} ${contact.lastName}`
-        .toLowerCase()
-        .includes(this.searchText.toLowerCase())
+  filteredContacts$: Observable<Contact[]> = combineLatest([
+    this.contacts$,
+    this.store.pipe(select(() => this.searchText)).pipe(startWith("")),
+  ]).pipe(
+    map(([contacts, searchText]) => {
+      if (!searchText) return contacts;
+      return contacts.filter((contact) =>
+        `${contact.firstName} ${contact.lastName}`
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+      );
+    })
+  );
+
+  ngOnInit(): void {
+    this.store.dispatch(loadContacts());
+  }
+
+  toggleSort(): void {
+    this.sortAscending = !this.sortAscending;
+    this.filteredContacts$ = this.filteredContacts$.pipe(
+      map((contacts) =>
+        [...contacts].sort((a, b) =>
+          this.sortAscending
+            ? a.firstName.localeCompare(b.firstName)
+            : b.firstName.localeCompare(a.firstName)
+        )
+      )
     );
-  }
-
-  sortContacts() {
-    this.contacts = this.contacts.sort((a, b) => {
-      const nameA = `${a.firstName}`.toLowerCase();
-      const nameB = `${b.firstName}`.toLowerCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-
-  editContact(contact: any) {
-    console.log("Редактирование контакта:", contact);
-  }
-
-  deleteContact(id: number) {
-    this.contacts = this.contacts.filter((contact) => contact.id !== id);
   }
 }

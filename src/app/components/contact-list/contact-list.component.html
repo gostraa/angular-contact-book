@@ -1,8 +1,4 @@
-<div>
-  <div>
-    <input type="text" [(ngModel)]="searchText" placeholder="Поиск по имени" />
-    <button (click)="sortContacts()">Сортировать по имени</button>
-  </div>
+<div *ngIf="filteredContacts$ | async as contacts; else loading">
   <table>
     <thead>
       <tr>
@@ -13,15 +9,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let contact of filteredContacts()">
+      <tr *ngFor="let contact of contacts">
         <td>{{ contact.firstName }} {{ contact.lastName }}</td>
         <td>{{ contact.phone }}</td>
         <td>{{ contact.email }}</td>
         <td>
-          <button (click)="editContact(contact)">Редактировать</button>
-          <button (click)="deleteContact(contact.id)">Удалить</button>
+          <!-- <button (click)="editContact(contact)">Редактировать</button>
+          <button (click)="deleteContact(contact.id)">Удалить</button> -->
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+<ng-template #loading>Загрузка...</ng-template>

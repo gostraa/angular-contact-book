@@ -15,15 +15,12 @@ import {
   styleUrl: "./contact-form.component.scss",
 })
 export class ContactFormComponent {
-  contactForm: FormGroup;
+  @Output() contactForm: FormGroup;
   constructor() {
     this.contactForm = new FormGroup({
       firstName: new FormControl("", [Validators.required]),
-      lastName: new FormControl("", [Validators.required]),
-      phone: new FormControl("", [
-        Validators.required,
-        Validators.pattern(/^\+380\d{9}$/),
-      ]),
+      lastName: new FormControl(""),
+      phone: new FormControl("", [Validators.required]),
       email: new FormControl("", [Validators.required, Validators.email]),
     });
   }
@@ -35,11 +32,5 @@ export class ContactFormComponent {
       console.log(this.contactForm.value);
       console.log("Invalid contact data");
     }
-  }
-
-  isValidPhone(phone: string): boolean {
-    const phonePattern =
-      /^\+?\d{1,4}?[\s\-]?\(?\d{1,3}?\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/;
-    return phonePattern.test(phone);
   }
 }

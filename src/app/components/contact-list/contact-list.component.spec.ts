@@ -1,19 +1,19 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-
+import { TestBed } from "@angular/core/testing";
+import { provideStore } from "@ngrx/store";
+import { Store } from "@ngrx/store";
 import { ContactListComponent } from "./contact-list.component";
+import { contactReducer } from "../../store/redusers/contact.reducer";
 
 describe("ContactListComponent", () => {
   let component: ContactListComponent;
-  let fixture: ComponentFixture<ContactListComponent>;
+  let store: Store;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ContactListComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(ContactListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideStore({ contacts: contactReducer })],
+    });
+    store = TestBed.inject(Store);
+    component = TestBed.createComponent(ContactListComponent).componentInstance;
   });
 
   it("should create", () => {
