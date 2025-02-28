@@ -1,34 +1,58 @@
 <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="firstName">Name</label>
-    <input id="firstName" formControlName="firstName" />
-    <div *ngIf="contactForm.get('firstName')?.invalid  && contactForm.get('firstName')?.touched">
-      <small>Имя обязательно</small>
-    </div>
-  </div>
-  <div>
-    <label for="lastName">Surname</label>
-    <input id="lastName" formControlName="lastName" />
-    <div *ngIf="contactForm.get('lastName')?.invalid && contactForm.get('lastName')?.touched">
-      <small>Фамилия обязательна</small>
-    </div>
+  <button class="back-button" type="button" mat-mini-fab (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
 
+  <mat-card class="contact-form">
+    <mat-card-header>
+      <mat-card-title>Contact Form</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput id="firstName" formControlName="firstName" />
+          <mat-error *ngIf="contactForm.get('firstName')?.invalid && contactForm.get('firstName')?.touched">
+            Name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-  </div>
-  <div>
-    <label for="phone">Phone</label>
-    <input id="phone" formControlName="phone" name="phone" required />
-    <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
-      <small>Телефон обязателен и должен быть в формате +380XXXXXXXXX</small>
-    </div>
+      <div class="form-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Surname</mat-label>
+          <input matInput id="lastName" formControlName="lastName" />
+          <mat-error *ngIf="contactForm.get('lastName')?.invalid && contactForm.get('lastName')?.touched">
+            Surname is required
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-  </div>
-  <div>
-    <label for="email">Email</label>
-    <input id="email" formControlName="email" name="email" type="email" required email />
-    <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
-      <small>Некорректный email</small>
-    </div>
-  </div>
-  <button type="submit">Сохранить</button>
+      <div class="form-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput id="phone" formControlName="phone" type="text" />
+          <mat-error *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
+            <span *ngIf="contactForm.get('phone')?.hasError('required')">Phone is required</span>
+            <span *ngIf="contactForm.get('phone')?.hasError('pattern')">Invalid phone number</span>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput id="email" formControlName="email" type="email" />
+          <mat-error *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+            <span *ngIf="contactForm.get('email')?.hasError('required')">Email is required</span>
+            <span *ngIf="contactForm.get('email')?.hasError('email')">Invalid email</span>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <button mat-fab extended color="primary" type="submit" [disabled]="contactForm.invalid">Save</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </form>

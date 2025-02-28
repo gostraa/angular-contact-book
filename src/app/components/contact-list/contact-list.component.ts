@@ -1,70 +1,92 @@
-import { NgFor } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
+import { select, Store } from "@ngrx/store";
+import {
+  selectAllContacts,
+  selectError,
+} from "../../contact/selectors/contact.selectors";
+import {
+  deleteContact,
+  loadContacts,
+} from "../../contact/actions/contact.actions";
+import { Contact } from "../../contact/contact.model";
+import { AsyncPipe, CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-
+import { map, Observable } from "rxjs";
+import { FullNamePipe } from "../../pipes/full-name.pipe";
+import { PhoneFormatPipe } from "../../pipes/phone-format.pipe";
+import { Router } from "@angular/router";
+import { MatButtonModule } from "@angular/material/button";
+import { MatInputModule } from "@angular/material/input";
+import { MatTableModule } from "@angular/material/table";
+import { MatIconModule } from "@angular/material/icon";
+import { MatFormFieldModule } from "@angular/material/form-field";
 @Component({
   selector: "app-contact-list",
-  imports: [NgFor, FormsModule],
   templateUrl: "./contact-list.component.html",
-  styleUrl: "./contact-list.component.scss",
+  styleUrls: ["./contact-list.component.scss"],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    AsyncPipe,
+    FullNamePipe,
+    PhoneFormatPipe,
+    MatButtonModule,
+    MatInputModule,
+    MatTableModule,
+    MatIconModule,
+    MatFormFieldModule,
+  ],
 })
-export class ContactListComponent {
+export class ContactListComponent implements OnInit {
+  contacts$!: Observable<Contact[]>;
+  error$!: Observable<any>;
   searchText = "";
+  sortAscending = false;
+  displayedColumns: string[] = ["Name", "Phone", "Email", "Actions"];
 
-  contacts = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      phone: "+380123456789",
-      email: "john.doe@example.com",
-    },
-    {
-      id: 2,
-      firstName: "Jane",
-      lastName: "Smith",
-      phone: "+380987654321",
-      email: "jane.smith@example.com",
-    },
-    {
-      id: 3,
-      firstName: "Mike",
-      lastName: "Jordan",
-      phone: "+380112233445",
-      email: "mike.jordan@example.com",
-    },
-  ];
+  constructor(
+    private store: Store<{ contacts: Contact[] }>,
+    private router: Router
+  ) {}
 
-  filteredContacts() {
-    if (!this.searchText) {
-      return this.contacts;
-    }
-    return this.contacts.filter((contact) =>
+  ngOnInit(): void {
+    this.contacts$ = this.store.select(selectAllContacts);
+    this.error$ = this.store.select(selectError);
+    this.store.dispatch(loadContacts());
+  }
+
+  deleteContact(id: number | string) {
+    this.store.dispatch(deleteContact({ id }));
+  }
+
+  filterContacts(contacts: Contact[] | null): Contact[] {
+    if (!contacts) return [];
+    if (!this.searchText) return contacts;
+    return contacts.filter((contact) =>
       `${contact.firstName} ${contact.lastName}`
         .toLowerCase()
         .includes(this.searchText.toLowerCase())
     );
   }
 
-  sortContacts() {
-    this.contacts = this.contacts.sort((a, b) => {
-      const nameA = `${a.firstName}`.toLowerCase();
-      const nameB = `${b.firstName}`.toLowerCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+  toggleSort(): void {
+    this.sortAscending = !this.sortAscending;
+    this.contacts$ = this.contacts$.pipe(
+      map((contacts) =>
+        [...contacts].sort((a, b) =>
+          this.sortAscending
+            ? a.firstName.localeCompare(b.firstName)
+            : b.firstName.localeCompare(a.firstName)
+        )
+      )
+    );
   }
 
-  editContact(contact: any) {
-    console.log("Редактирование контакта:", contact);
+  goToEditContact(contactId: string) {
+    this.router.navigate(["/contacts/edit", contactId]);
   }
-
-  deleteContact(id: number) {
-    this.contacts = this.contacts.filter((contact) => contact.id !== id);
+  goToAddContact() {
+    this.router.navigate(["/contacts/add"]);
   }
 }
