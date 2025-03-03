@@ -36,12 +36,7 @@ describe("ContactEditComponent", () => {
       },
     });
 
-    http = http = jasmine.createSpyObj("HttpClient", [
-      "get",
-      "post",
-      "put",
-      "delete",
-    ]);
+    http = jasmine.createSpyObj("HttpClient", ["get", "post", "put", "delete"]);
 
     contactServiceSpy = jasmine.createSpyObj("ContactService", [
       "getContactById",

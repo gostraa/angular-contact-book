@@ -68,7 +68,7 @@ describe("contactReducer", () => {
     });
 
     it("should update state with error on deleteContactFailure", () => {
-      const error = "Failed to load contacts";
+      const error = "Failed to delete contacts";
       const action = deleteContactFailure({ error });
       const state = contactReducer(initialContactsState, action);
 
@@ -86,7 +86,7 @@ describe("contactReducer", () => {
     });
 
     it("should update state with error on addContactFailure", () => {
-      const error = "Failed to load contacts";
+      const error = "Failed to add contacts";
       const action = addContactFailure({ error });
       const state = contactReducer(initialState, action);
 
@@ -115,7 +115,7 @@ describe("contactReducer", () => {
     });
 
     it("should update state with error on updateContactFailure", () => {
-      const error = "Failed to load contacts";
+      const error = "Failed to update contacts";
       const action = updateContactFailure({ error });
       const state = contactReducer(initialContactsState, action);
 

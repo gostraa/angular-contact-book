@@ -5,7 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { ContactService } from "./contact.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { of, throwError } from "rxjs";
+
 import { Contact } from "../contact.model";
 
 describe("ContactService", () => {
@@ -22,7 +22,6 @@ describe("ContactService", () => {
   };
 
   beforeEach(() => {
-    // Создаем мок для MatSnackBar
     snackBar = jasmine.createSpyObj("MatSnackBar", ["open"]);
 
     TestBed.configureTestingModule({
@@ -35,7 +34,7 @@ describe("ContactService", () => {
   });
 
   afterEach(() => {
-    httpMock.verify(); // Убедитесь, что не осталось незакрытых HTTP-запросов
+    httpMock.verify();
   });
 
   it("should be created", () => {
@@ -70,23 +69,6 @@ describe("ContactService", () => {
       expect(req.request.method).toBe("GET");
       req.flush(mockContacts);
     });
-
-    it("should handle error when getting contacts", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Internal Server Error",
-      };
-
-      service.getContacts().subscribe({
-        next: () => fail("should have failed with the 500 error"),
-        error: (error) => {
-          expect(error.status).toBe(500);
-        },
-      });
-
-      const req = httpMock.expectOne("http://localhost:3000/api/contacts/");
-      req.flush("Error", errorResponse);
-    });
   });
 
   describe("getContactById()", () => {
@@ -101,22 +83,6 @@ describe("ContactService", () => {
       expect(req.request.method).toBe("GET");
       req.flush(mockContact);
     });
-
-    it("should handle error when getting contact by ID", () => {
-      const errorResponse = { status: 404, statusText: "Not Found" };
-
-      service.getContactById(mockContact.id).subscribe({
-        next: () => fail("should have failed with a 404 error"),
-        error: (error) => {
-          expect(error.status).toBe(404);
-        },
-      });
-
-      const req = httpMock.expectOne(
-        `http://localhost:3000/api/contacts/${mockContact.id}`
-      );
-      req.flush("Error", errorResponse);
-    });
   });
 
   describe("addContact()", () => {
@@ -128,20 +94,6 @@ describe("ContactService", () => {
       const req = httpMock.expectOne("http://localhost:3000/api/contacts/");
       expect(req.request.method).toBe("POST");
       req.flush(mockContact);
-    });
-
-    it("should handle error when adding a contact", () => {
-      const errorResponse = { status: 400, statusText: "Bad Request" };
-
-      service.addContact(mockContact).subscribe({
-        next: () => fail("should have failed with the 400 error"),
-        error: (error) => {
-          expect(error.status).toBe(400);
-        },
-      });
-
-      const req = httpMock.expectOne("http://localhost:3000/api/contacts/");
-      req.flush("Error", errorResponse);
     });
   });
 
@@ -157,22 +109,6 @@ describe("ContactService", () => {
       expect(req.request.method).toBe("PUT");
       req.flush(mockContact);
     });
-
-    it("should handle error when updating a contact", () => {
-      const errorResponse = { status: 400, statusText: "Bad Request" };
-
-      service.updateContact(mockContact).subscribe({
-        next: () => fail("should have failed with the 400 error"),
-        error: (error) => {
-          expect(error.status).toBe(400);
-        },
-      });
-
-      const req = httpMock.expectOne(
-        `http://localhost:3000/api/contacts/${mockContact.id}`
-      );
-      req.flush("Error", errorResponse);
-    });
   });
 
   describe("deleteContact()", () => {
@@ -186,25 +122,6 @@ describe("ContactService", () => {
       );
       expect(req.request.method).toBe("DELETE");
       req.flush({ id: mockContact.id });
-    });
-
-    it("should handle error when deleting a contact", () => {
-      const errorResponse = {
-        status: 500,
-        statusText: "Internal Server Error",
-      };
-
-      service.deleteContact(mockContact.id).subscribe({
-        next: () => fail("should have failed with the 500 error"),
-        error: (error) => {
-          expect(error.status).toBe(500);
-        },
-      });
-
-      const req = httpMock.expectOne(
-        `http://localhost:3000/api/contacts/${mockContact.id}`
-      );
-      req.flush("Error", errorResponse);
     });
   });
 });

@@ -11,7 +11,7 @@ import {
 } from "./../actions/contact.actions";
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { Action, Store } from "@ngrx/store";
+import { Action } from "@ngrx/store";
 import { Observable, of } from "rxjs";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 
@@ -22,6 +22,7 @@ import {
 } from "../actions/contact.actions";
 import { ContactService } from "../services/contact.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { LogService } from "../services/log.service";
 
 @Injectable()
 export class ContactEffects {
@@ -33,7 +34,8 @@ export class ContactEffects {
   constructor(
     private actions$: Actions,
     private contactService: ContactService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logService: LogService
   ) {
     this.loadContacts$ = createEffect(() =>
       this.actions$.pipe(
@@ -41,9 +43,14 @@ export class ContactEffects {
         mergeMap(() =>
           this.contactService.getContacts().pipe(
             map((contacts) => loadContactsSuccess({ contacts })),
-            catchError((error) =>
-              of(loadContactsFailure({ error: error.message }))
-            )
+            catchError((error) => {
+              this.logService.logErrorToConsole(
+                "Failed to load contacts",
+                error
+              );
+              this.logService.logErrorToServer({ error }).subscribe();
+              return of(loadContactsFailure({ error: error.message }));
+            })
           )
         )
       )
@@ -60,6 +67,8 @@ export class ContactEffects {
                 this.showSnackBar("Contact added successfully!", "Close"),
             }),
             catchError((error) => {
+              this.logService.logErrorToConsole("Failed to add contact", error);
+              this.logService.logErrorToServer({ error }).subscribe();
               return of(addContactFailure({ error: error.message }));
             })
           );
@@ -77,9 +86,14 @@ export class ContactEffects {
               next: () =>
                 this.showSnackBar("Contact updated successfully!", "Close"),
             }),
-            catchError((error) =>
-              of(updateContactFailure({ error: error.message }))
-            )
+            catchError((error) => {
+              this.logService.logErrorToConsole(
+                "Failed to update contact",
+                error
+              );
+              this.logService.logErrorToServer({ error }).subscribe();
+              return of(updateContactFailure({ error: error.message }));
+            })
           );
         })
       )
@@ -95,9 +109,14 @@ export class ContactEffects {
               next: () =>
                 this.showSnackBar("Contact deleted successfully!", "Close"),
             }),
-            catchError((error) =>
-              of(deleteContactFailure({ error: error.message }))
-            )
+            catchError((error) => {
+              this.logService.logErrorToConsole(
+                "Failed to delete contact",
+                error
+              );
+              this.logService.logErrorToServer({ error }).subscribe();
+              return of(deleteContactFailure({ error: error.message }));
+            })
           );
         })
       )

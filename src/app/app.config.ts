@@ -14,7 +14,7 @@ import { provideEffects } from "@ngrx/effects";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorInterceptor } from "./contact/interceptors/error.interceptor";
-import { LogService } from "./contact/log.service";
+import { LogService } from "./contact/services/log.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 export const appConfig: ApplicationConfig = {

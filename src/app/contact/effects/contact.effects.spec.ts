@@ -20,12 +20,34 @@ import {
   updateContactSuccess,
 } from "../actions/contact.actions";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { HttpClient } from "@angular/common/http";
+import { LogService } from "../services/log.service";
 
 describe("ContactEffects", () => {
   let actions$: Observable<Action>;
   let effects: ContactEffects;
   let contactService: jasmine.SpyObj<ContactService>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let http: HttpClient;
+  let logService: jasmine.SpyObj<LogService>;
+
+  const mockContacts = [
+    {
+      id: "some-id",
+      firstName: "John",
+      lastName: "Doe",
+      phone: "1234567890",
+      email: "john.doe@example.com",
+    },
+  ];
+
+  const mockContact = {
+    id: "some-id",
+    firstName: "John",
+    lastName: "Doe",
+    phone: "1234567890",
+    email: "john.doe@example.com",
+  };
 
   beforeEach(() => {
     contactService = jasmine.createSpyObj("ContactService", [
@@ -35,7 +57,11 @@ describe("ContactEffects", () => {
       "deleteContact",
     ]);
     snackBar = jasmine.createSpyObj("MatSnackBar", ["open"]);
-
+    http = jasmine.createSpyObj("HttpClient", ["get", "post", "put", "delete"]);
+    const logServiceSpy = jasmine.createSpyObj("LogService", [
+      "logErrorToServer",
+      "logErrorToConsole",
+    ]);
     TestBed.configureTestingModule({
       imports: [StoreModule.forRoot({})],
       providers: [
@@ -43,23 +69,17 @@ describe("ContactEffects", () => {
         provideMockActions(() => actions$),
         { provide: ContactService, useValue: contactService },
         { provide: MatSnackBar, useValue: snackBar },
+        { provide: HttpClient, useValue: http },
+        { provide: LogService, useValue: logServiceSpy },
       ],
     });
 
+    logService = TestBed.inject(LogService) as jasmine.SpyObj<LogService>;
     effects = TestBed.inject(ContactEffects);
   });
 
   describe("loadContacts$", () => {
     it("should load contacts successfully", () => {
-      const mockContacts = [
-        {
-          id: "some-id",
-          firstName: "John",
-          lastName: "Doe",
-          phone: "1234567890",
-          email: "john.doe@example.com",
-        },
-      ];
       const action = loadContacts();
       const completion = loadContactsSuccess({ contacts: mockContacts });
 
@@ -75,25 +95,24 @@ describe("ContactEffects", () => {
       const action = loadContacts();
       const error = { message: "Failed to load contacts" };
       const completion = loadContactsFailure({ error: error.message });
-
+      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.getContacts.and.returnValue(throwError(() => error));
 
       const expected = cold("-b", { b: completion });
 
       expect(effects.loadContacts$).toBeObservable(expected);
+      expect(logService.logErrorToServer).toHaveBeenCalledWith({ error });
+      expect(logService.logErrorToConsole).toHaveBeenCalledWith(
+        "Failed to load contacts",
+        error
+      );
     });
   });
 
   describe("addContact$", () => {
     it("should add contact successfully", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
       const action = addContact({ contact: mockContact });
       const completion = addContactSuccess({ contact: mockContact });
 
@@ -111,36 +130,28 @@ describe("ContactEffects", () => {
     });
 
     it("should handle error when adding contact", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
       const action = addContact({ contact: mockContact });
 
       const error = { message: "Failed to add contact" };
       const completion = addContactFailure({ error: error.message });
-
+      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.addContact.and.returnValue(throwError(() => error));
 
       const expected = cold("-b", { b: completion });
 
       expect(effects.addContact$).toBeObservable(expected);
+      expect(logService.logErrorToServer).toHaveBeenCalledWith({ error });
+      expect(logService.logErrorToConsole).toHaveBeenCalledWith(
+        "Failed to add contact",
+        error
+      );
     });
   });
 
   describe("updateContact$", () => {
     it("should update contact successfully", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
       const action = updateContact({ contact: mockContact });
       const completion = updateContactSuccess({ contact: mockContact });
 
@@ -158,17 +169,12 @@ describe("ContactEffects", () => {
     });
 
     it("should handle error when updating contact", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
       const action = updateContact({ contact: mockContact });
 
       const error = { message: "Failed to update contact" };
       const completion = updateContactFailure({ error: error.message });
+      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToConsole.and.stub();
 
       actions$ = hot("-a-", { a: action });
       contactService.updateContact.and.returnValue(throwError(() => error));
@@ -176,19 +182,16 @@ describe("ContactEffects", () => {
       const expected = cold("-b", { b: completion });
 
       expect(effects.updateContact$).toBeObservable(expected);
+      expect(logService.logErrorToServer).toHaveBeenCalledWith({ error });
+      expect(logService.logErrorToConsole).toHaveBeenCalledWith(
+        "Failed to update contact",
+        error
+      );
     });
   });
 
   describe("deleteContact$", () => {
     it("should delete contact successfully", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
-
       const action = deleteContact({ id: mockContact.id });
       const completion = deleteContactSuccess({ id: mockContact.id });
 
@@ -206,23 +209,22 @@ describe("ContactEffects", () => {
     });
 
     it("should handle error when deleting contacts", () => {
-      const mockContact = {
-        id: "some-id",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890",
-        email: "john.doe@example.com",
-      };
       const action = deleteContact({ id: mockContact.id });
       const error = { message: "Failed to delete contact" };
       const completion = deleteContactFailure({ error: error.message });
-
+      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.deleteContact.and.returnValue(throwError(() => error));
 
       const expected = cold("-b", { b: completion });
 
       expect(effects.deleteContact$).toBeObservable(expected);
+      expect(logService.logErrorToServer).toHaveBeenCalledWith({ error });
+      expect(logService.logErrorToConsole).toHaveBeenCalledWith(
+        "Failed to delete contact",
+        error
+      );
     });
   });
 });
