@@ -9,10 +9,10 @@ import {
   updateContactFailure,
   updateContactSuccess,
 } from "./../actions/contact.actions";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Action, Store } from "@ngrx/store";
-import { EMPTY, Observable, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 
 import {
@@ -21,6 +21,7 @@ import {
   loadContactsSuccess,
 } from "../actions/contact.actions";
 import { ContactService } from "../services/contact.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable()
 export class ContactEffects {
@@ -32,7 +33,7 @@ export class ContactEffects {
   constructor(
     private actions$: Actions,
     private contactService: ContactService,
-    private store: Store
+    private snackBar: MatSnackBar
   ) {
     this.loadContacts$ = createEffect(() =>
       this.actions$.pipe(
@@ -54,9 +55,13 @@ export class ContactEffects {
         mergeMap(({ contact }) => {
           return this.contactService.addContact(contact).pipe(
             map((contact) => addContactSuccess({ contact })),
-            catchError((error) =>
-              of(addContactFailure({ error: error.message }))
-            )
+            tap({
+              next: () =>
+                this.showSnackBar("Contact added successfully!", "Close"),
+            }),
+            catchError((error) => {
+              return of(addContactFailure({ error: error.message }));
+            })
           );
         })
       )
@@ -68,6 +73,10 @@ export class ContactEffects {
         mergeMap(({ contact }) => {
           return this.contactService.updateContact(contact).pipe(
             map((contact) => updateContactSuccess({ contact })),
+            tap({
+              next: () =>
+                this.showSnackBar("Contact updated successfully!", "Close"),
+            }),
             catchError((error) =>
               of(updateContactFailure({ error: error.message }))
             )
@@ -79,9 +88,13 @@ export class ContactEffects {
     this.deleteContact$ = createEffect(() =>
       this.actions$.pipe(
         ofType(deleteContact),
-        mergeMap(({ id }) => {
-          return this.contactService.deleteContact(id).pipe(
+        mergeMap((contact) => {
+          return this.contactService.deleteContact(contact.id).pipe(
             map((id) => deleteContactSuccess(id)),
+            tap({
+              next: () =>
+                this.showSnackBar("Contact deleted successfully!", "Close"),
+            }),
             catchError((error) =>
               of(deleteContactFailure({ error: error.message }))
             )
@@ -89,5 +102,16 @@ export class ContactEffects {
         })
       )
     );
+  }
+
+  private showSnackBar(
+    message: string,
+    action: string,
+    type: "success" | "error" = "success"
+  ) {
+    this.snackBar.open(message, action, {
+      duration: 4000,
+      panelClass: type === "success" ? "snackbar-success" : "snackbar-error",
+    });
   }
 }

@@ -53,11 +53,7 @@ export class ContactEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.contactId = this.route.snapshot.paramMap.get("id");
-    if (this.contactId) {
-      this.loadContact();
-    } else {
-      console.error("No contact ID found in the route");
-    }
+    if (this.contactId) this.loadContact();
   }
 
   loadContact() {
@@ -78,15 +74,12 @@ export class ContactEditComponent implements OnInit {
 
   onSubmit() {
     if (this.editForm.valid) {
-      console.log("Form submitted", this.editForm.value);
       this.store.dispatch(
         updateContact({
           contact: { id: this.contact.id, ...this.editForm.value },
         })
       );
       this.router.navigate(["/contacts"]);
-    } else {
-      console.log("Form is invalid");
     }
   }
 }

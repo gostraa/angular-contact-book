@@ -45,12 +45,12 @@ export const updateContactFailure = createAction(
 
 export const deleteContact = createAction(
   "[Contact] Delete Contact",
-  props<{ id: number | string }>()
+  props<{ id: string }>()
 );
 
 export const deleteContactSuccess = createAction(
   "[Contact] Delete Contact Success",
-  props<{ id: number | string }>()
+  props<{ id: string }>()
 );
 
 export const deleteContactFailure = createAction(

@@ -1,12 +1,11 @@
 import { createReducer, on } from "@ngrx/store";
 import {
-  addContact,
   addContactFailure,
   addContactSuccess,
-  deleteContact,
+  deleteContactFailure,
+  deleteContactSuccess,
   loadContactsFailure,
   loadContactsSuccess,
-  updateContact,
   updateContactFailure,
   updateContactSuccess,
 } from "../actions/contact.actions";
@@ -32,14 +31,16 @@ export const contactReducer = createReducer(
     ...state,
     error,
   })),
-  on(deleteContact, (state, { id }) => ({
+  on(deleteContactSuccess, (state, { id }) => ({
     ...state,
     contacts: state.contacts.filter((contact) => contact.id !== id),
   })),
-  on(addContact, (state) => ({
-    ...state,
-    loading: true,
-  })),
+  on(deleteContactFailure, (state, { error }) => {
+    return {
+      ...state,
+      error: error,
+    };
+  }),
   on(addContactSuccess, (state, { contact }) => ({
     ...state,
     contacts: [...state.contacts, contact],
@@ -50,16 +51,10 @@ export const contactReducer = createReducer(
     error,
     loading: false,
   })),
-  on(updateContact, (state) => ({
-    ...state,
-    loading: true,
-  })),
   on(updateContactSuccess, (state, { contact }) => {
-    console.log(contact, "contact");
     return {
       ...state,
       contacts: state.contacts.map((c) => {
-        console.log(c, "c");
         return c.id === contact.id ? { ...c, ...contact } : c;
       }),
       loading: false,

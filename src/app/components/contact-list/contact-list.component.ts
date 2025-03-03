@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { select, Store } from "@ngrx/store";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { Store } from "@ngrx/store";
 import {
   selectAllContacts,
   selectError,
@@ -20,6 +20,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { ContactService } from "../../contact/services/contact.service";
 @Component({
   selector: "app-contact-list",
   templateUrl: "./contact-list.component.html",
@@ -37,6 +38,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
     MatIconModule,
     MatFormFieldModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactListComponent implements OnInit {
   contacts$!: Observable<Contact[]>;
@@ -56,7 +58,7 @@ export class ContactListComponent implements OnInit {
     this.store.dispatch(loadContacts());
   }
 
-  deleteContact(id: number | string) {
+  deleteContact(id: string) {
     this.store.dispatch(deleteContact({ id }));
   }
 

@@ -15,8 +15,9 @@ import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatCardModule } from "@angular/material/card";
+import { UuidService } from "../../contact/services/uuid.service";
 @Component({
   selector: "app-contact-form",
   imports: [
@@ -37,7 +38,8 @@ export class ContactFormComponent {
   contactForm: FormGroup;
   constructor(
     private store: Store,
-    private router: Router
+    private router: Router,
+    private uuidService: UuidService
   ) {
     this.contactForm = new FormGroup({
       firstName: new FormControl("", [Validators.required]),
@@ -52,7 +54,7 @@ export class ContactFormComponent {
       this.store.dispatch(
         addContact({
           contact: {
-            id: uuidv4(),
+            id: this.uuidService.v4(),
             ...this.contactForm.value,
           },
         })
@@ -60,9 +62,6 @@ export class ContactFormComponent {
 
       this.contactForm.reset();
       this.router.navigate(["/contacts"]);
-    } else {
-      console.log(this.contactForm.value);
-      console.log("Invalid contact data");
     }
   }
 
