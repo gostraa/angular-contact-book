@@ -22,8 +22,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
 @Component({
   selector: "app-contact-list",
-  templateUrl: "./contact-list.component.html",
-  styleUrls: ["./contact-list.component.scss"],
+  templateUrl: "./contact-list-page.component.html",
+  styleUrls: ["./contact-list-page.component.scss"],
   standalone: true,
   imports: [
     CommonModule,

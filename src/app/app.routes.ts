@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { ContactListComponent } from "./components/contact-list/contact-list.component";
+import { ContactListComponent } from "./pages/contact-list-page/contact-list-page.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/contacts", pathMatch: "full" },
@@ -7,14 +7,14 @@ export const routes: Routes = [
   {
     path: "contacts/add",
     loadComponent: () =>
-      import("./components/contact-form/contact-form.component").then(
+      import("./pages/add-contact-page/add-contact-page.component").then(
         (m) => m.ContactFormComponent
       ),
   },
   {
     path: "contacts/edit/:id",
     loadComponent: () =>
-      import("./components/contact-edit/contact-edit.component").then(
+      import("./pages/edit-contact-page/edit-contact-page.component").then(
         (m) => m.ContactEditComponent
       ),
   },

@@ -28,8 +28,8 @@ import { updateContact } from "../../contact/actions/contact.actions";
     MatButtonModule,
     MatCardModule,
   ],
-  templateUrl: "./contact-edit.component.html",
-  styleUrl: "./contact-edit.component.scss",
+  templateUrl: "./edit-contact-page.component.html",
+  styleUrl: "./edit-contact-page.component.scss",
 })
 export class ContactEditComponent implements OnInit {
   editForm: FormGroup;

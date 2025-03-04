@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ContactFormComponent } from "./contact-form.component";
+import { ContactFormComponent } from "./add-contact-page.component";
 import { provideMockStore } from "@ngrx/store/testing";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";

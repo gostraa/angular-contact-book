@@ -30,8 +30,8 @@ import { UuidService } from "../../contact/services/uuid.service";
     MatSnackBarModule,
     MatCardModule,
   ],
-  templateUrl: "./contact-form.component.html",
-  styleUrl: "./contact-form.component.scss",
+  templateUrl: "./add-contact-page.component.html",
+  styleUrl: "./add-contact-page.component.scss",
 })
 export class ContactFormComponent {
   contactForm: FormGroup;

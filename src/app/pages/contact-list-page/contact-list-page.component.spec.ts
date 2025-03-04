@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ContactListComponent } from "./contact-list.component";
+import { ContactListComponent } from "./contact-list-page.component";
 import { provideMockStore, MockStore } from "@ngrx/store/testing";
 import {
   selectAllContacts,
