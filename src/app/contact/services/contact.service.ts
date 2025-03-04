@@ -1,7 +1,6 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable, tap } from "rxjs";
+import { Observable } from "rxjs";
 import { Contact } from "../contact.model";
 
 @Injectable({

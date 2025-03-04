@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, Output } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -9,7 +9,6 @@ import {
 } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { addContact } from "../../contact/actions/contact.actions";
-import { v4 as uuidv4 } from "uuid";
 import { Router } from "@angular/router";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";

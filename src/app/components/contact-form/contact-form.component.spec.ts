@@ -10,7 +10,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatCardModule } from "@angular/material/card";
 import { addContact } from "../../contact/actions/contact.actions";
-import { v4 as uuidv4 } from "uuid";
 import { UuidService } from "../../contact/services/uuid.service";
 
 describe("ContactFormComponent", () => {

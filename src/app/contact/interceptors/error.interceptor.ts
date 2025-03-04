@@ -5,10 +5,9 @@ import {
   HttpHandler,
   HttpEvent,
   HttpErrorResponse,
-  HttpResponse,
 } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { catchError } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({

@@ -13,7 +13,6 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { HttpClient } from "@angular/common/http";
 import { ContactService } from "../../contact/services/contact.service";
 import { of } from "rxjs";
-import { UuidService } from "../../contact/services/uuid.service";
 import { updateContact } from "../../contact/actions/contact.actions";
 
 describe("ContactEditComponent", () => {

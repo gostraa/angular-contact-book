@@ -20,7 +20,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { ContactService } from "../../contact/services/contact.service";
 @Component({
   selector: "app-contact-list",
   templateUrl: "./contact-list.component.html",
