@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { ContactListComponent } from "./pages/contact-list-page/contact-list-page.component";
+import { EmptyRouteComponent } from "./components/empty-route/empty-route/empty-route.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/contacts", pathMatch: "full" },
@@ -18,4 +19,5 @@ export const routes: Routes = [
         (m) => m.ContactEditComponent
       ),
   },
+  { path: "**", component: EmptyRouteComponent },
 ];

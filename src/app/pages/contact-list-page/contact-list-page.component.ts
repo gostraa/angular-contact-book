@@ -19,7 +19,7 @@ import { FormsModule } from "@angular/forms";
 import { map, Observable } from "rxjs";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { PhoneFormatPipe } from "../../pipes/phone-format.pipe";
-import { Router } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
@@ -42,12 +42,12 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
     MatTableModule,
     MatIconModule,
     MatFormFieldModule,
+    RouterModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactListComponent implements OnInit {
   private store = inject(Store<ContactState>);
-  private router: Router = inject(Router);
   private sortAscending: boolean = false;
 
   contacts$!: Observable<Contact[]>;
@@ -86,12 +86,5 @@ export class ContactListComponent implements OnInit {
         )
       )
     );
-  }
-
-  goToEditContact(contactId: string) {
-    this.router.navigate(["/contacts/edit", contactId]);
-  }
-  goToAddContact() {
-    this.router.navigate(["/contacts/add"]);
   }
 }

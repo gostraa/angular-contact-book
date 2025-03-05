@@ -9,7 +9,7 @@ import {
   loadContacts,
   deleteContact,
 } from "../../contact/actions/contact.actions";
-import { Router } from "@angular/router";
+import { provideRouter } from "@angular/router";
 import { Contact } from "../../contact/contact.model";
 import { By } from "@angular/platform-browser";
 import { MatButtonModule } from "@angular/material/button";
@@ -18,7 +18,6 @@ describe("ContactListComponent", () => {
   let component: ContactListComponent;
   let fixture: ComponentFixture<ContactListComponent>;
   let store: MockStore;
-  let routerSpy: jasmine.SpyObj<Router>;
 
   const mockContacts: Contact[] = [
     {
@@ -38,8 +37,6 @@ describe("ContactListComponent", () => {
   ];
 
   beforeEach(async () => {
-    routerSpy = jasmine.createSpyObj("Router", ["navigate"]);
-
     await TestBed.configureTestingModule({
       imports: [ContactListComponent, MatButtonModule],
       providers: [
@@ -49,7 +46,7 @@ describe("ContactListComponent", () => {
             { selector: selectError, value: null },
           ],
         }),
-        { provide: Router, useValue: routerSpy },
+        provideRouter([]),
       ],
     }).compileComponents();
 
@@ -96,21 +93,7 @@ describe("ContactListComponent", () => {
 
   it("should dispatch delete contact action", () => {
     spyOn(store, "dispatch");
-
     component.deleteContact("1");
-
     expect(store.dispatch).toHaveBeenCalledWith(deleteContact({ id: "1" }));
-  });
-
-  it("should navigate to edit contact page", () => {
-    component.goToEditContact("1");
-
-    expect(routerSpy.navigate).toHaveBeenCalledWith(["/contacts/edit", "1"]);
-  });
-
-  it("should navigate to add contact page", () => {
-    component.goToAddContact();
-
-    expect(routerSpy.navigate).toHaveBeenCalledWith(["/contacts/add"]);
   });
 });
