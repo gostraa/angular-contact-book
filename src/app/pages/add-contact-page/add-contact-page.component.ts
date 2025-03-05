@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -17,6 +17,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatCardModule } from "@angular/material/card";
 import { UuidService } from "../../contact/services/uuid.service";
+import { ContactState } from "../../contact/reducers/contact.reducer";
 @Component({
   selector: "app-contact-form",
   imports: [
@@ -34,12 +35,12 @@ import { UuidService } from "../../contact/services/uuid.service";
   styleUrl: "./add-contact-page.component.scss",
 })
 export class ContactFormComponent {
+  store = inject(Store<ContactState>);
+  router = inject(Router);
+  uuidService = inject(UuidService);
   contactForm: FormGroup;
-  constructor(
-    private store: Store,
-    private router: Router,
-    private uuidService: UuidService
-  ) {
+
+  constructor() {
     this.contactForm = new FormGroup({
       firstName: new FormControl("", [Validators.required]),
       lastName: new FormControl(""),

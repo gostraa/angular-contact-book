@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from "@angular/core";
 import { Store } from "@ngrx/store";
 import {
   selectAllContacts,
@@ -20,6 +25,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { ContactState } from "../../contact/reducers/contact.reducer";
 @Component({
   selector: "app-contact-list",
   templateUrl: "./contact-list-page.component.html",
@@ -40,16 +46,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactListComponent implements OnInit {
+  store = inject(Store<ContactState>);
+  router = inject(Router);
   contacts$!: Observable<Contact[]>;
   error$!: Observable<any>;
   searchText = "";
   sortAscending = false;
   displayedColumns: string[] = ["Name", "Phone", "Email", "Actions"];
-
-  constructor(
-    private store: Store<{ contacts: Contact[] }>,
-    private router: Router
-  ) {}
 
   ngOnInit(): void {
     this.contacts$ = this.store.select(selectAllContacts);

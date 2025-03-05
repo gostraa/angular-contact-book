@@ -44,12 +44,10 @@ export const contactReducer = createReducer(
   on(addContactSuccess, (state, { contact }) => ({
     ...state,
     contacts: [...state.contacts, contact],
-    loading: false,
   })),
   on(addContactFailure, (state, { error }) => ({
     ...state,
     error,
-    loading: false,
   })),
   on(updateContactSuccess, (state, { contact }) => {
     return {
@@ -57,12 +55,10 @@ export const contactReducer = createReducer(
       contacts: state.contacts.map((c) => {
         return c.id === contact.id ? { ...c, ...contact } : c;
       }),
-      loading: false,
     };
   }),
   on(updateContactFailure, (state, { error }) => ({
     ...state,
     error,
-    loading: false,
   }))
 );

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 
@@ -6,9 +6,9 @@ import { Observable } from "rxjs";
   providedIn: "root",
 })
 export class LogService {
-  private apiUrl = "http://localhost:3000/api/contacts/logs";
+  http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = "http://localhost:3000/api/contacts/logs";
 
   logErrorToConsole(message: string, error: any) {
     console.error(message, error);

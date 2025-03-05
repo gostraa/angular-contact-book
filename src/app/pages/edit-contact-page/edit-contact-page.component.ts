@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ContactService } from "../../contact/services/contact.service";
 import { Contact } from "../../contact/contact.model";
@@ -17,6 +17,7 @@ import { MatCardModule } from "@angular/material/card";
 
 import { Store } from "@ngrx/store";
 import { updateContact } from "../../contact/actions/contact.actions";
+import { ContactState } from "../../contact/reducers/contact.reducer";
 
 @Component({
   selector: "app-contact-edit",
@@ -32,16 +33,15 @@ import { updateContact } from "../../contact/actions/contact.actions";
   styleUrl: "./edit-contact-page.component.scss",
 })
 export class ContactEditComponent implements OnInit {
+  store = inject(Store<ContactState>);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
+  contactService = inject(ContactService);
   editForm: FormGroup;
   contactId: string | null = null;
   contact!: Contact;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private contactService: ContactService,
-    private store: Store
-  ) {
+  constructor() {
     this.editForm = new FormGroup({
       firstName: new FormControl("", [Validators.required]),
       lastName: new FormControl(""),
