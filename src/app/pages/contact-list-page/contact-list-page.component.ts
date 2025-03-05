@@ -46,12 +46,13 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactListComponent implements OnInit {
-  store = inject(Store<ContactState>);
-  router = inject(Router);
+  private store = inject(Store<ContactState>);
+  private router: Router = inject(Router);
+  private sortAscending: boolean = false;
+
   contacts$!: Observable<Contact[]>;
   error$!: Observable<any>;
-  searchText = "";
-  sortAscending = false;
+  searchText: string = "";
   displayedColumns: string[] = ["Name", "Phone", "Email", "Actions"];
 
   ngOnInit(): void {

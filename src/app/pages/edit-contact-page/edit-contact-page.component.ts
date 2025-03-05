@@ -33,24 +33,24 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   styleUrl: "./edit-contact-page.component.scss",
 })
 export class ContactEditComponent implements OnInit {
-  store = inject(Store<ContactState>);
-  route = inject(ActivatedRoute);
-  router = inject(Router);
-  contactService = inject(ContactService);
-  editForm: FormGroup;
-  contactId: string | null = null;
-  contact!: Contact;
-
-  constructor() {
-    this.editForm = new FormGroup({
-      firstName: new FormControl("", [Validators.required]),
-      lastName: new FormControl(""),
-      phone: new FormControl("", [Validators.required]),
-      email: new FormControl("", [Validators.required, Validators.email]),
-    });
-  }
+  private store = inject(Store<ContactState>);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private router: Router = inject(Router);
+  private contactService: ContactService = inject(ContactService);
+  private contactId: string | null = null;
+  private contact!: Contact;
+  editForm!: FormGroup;
 
   ngOnInit(): void {
+    this.editForm = new FormGroup({
+      firstName: new FormControl<string>("", [Validators.required]),
+      lastName: new FormControl<string>(""),
+      phone: new FormControl<string>("", [Validators.required]),
+      email: new FormControl<string>("", [
+        Validators.required,
+        Validators.email,
+      ]),
+    });
     this.contactId = this.route.snapshot.paramMap.get("id");
     if (this.contactId) this.loadContact();
   }
