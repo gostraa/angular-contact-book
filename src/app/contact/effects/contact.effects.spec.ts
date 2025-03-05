@@ -57,7 +57,6 @@ describe("ContactEffects", () => {
       "deleteContact",
     ]);
     snackBar = jasmine.createSpyObj("MatSnackBar", ["open"]);
-    http = jasmine.createSpyObj("HttpClient", ["get", "post", "put", "delete"]);
     const logServiceSpy = jasmine.createSpyObj("LogService", [
       "logErrorToServer",
       "logErrorToConsole",
@@ -69,7 +68,6 @@ describe("ContactEffects", () => {
         provideMockActions(() => actions$),
         { provide: ContactService, useValue: contactService },
         { provide: MatSnackBar, useValue: snackBar },
-        { provide: HttpClient, useValue: http },
         { provide: LogService, useValue: logServiceSpy },
       ],
     });

@@ -9,10 +9,9 @@ import {
   updateContactFailure,
   updateContactSuccess,
 } from "./../actions/contact.actions";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { Action } from "@ngrx/store";
-import { Observable, of } from "rxjs";
+import { of } from "rxjs";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 
 import {
@@ -26,111 +25,92 @@ import { LogService } from "../services/log.service";
 
 @Injectable()
 export class ContactEffects {
-  loadContacts$: Observable<Action>;
-  addContact$: Observable<Action>;
-  updateContact$: Observable<Action>;
-  deleteContact$: Observable<Action>;
+  private actions$ = inject(Actions);
+  private contactService = inject(ContactService);
+  private snackBar = inject(MatSnackBar);
+  private logService = inject(LogService);
 
-  constructor(
-    private actions$: Actions,
-    private contactService: ContactService,
-    private snackBar: MatSnackBar,
-    private logService: LogService
-  ) {
-    this.loadContacts$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(loadContacts),
-        mergeMap(() =>
-          this.contactService.getContacts().pipe(
-            map((contacts) => loadContactsSuccess({ contacts })),
-            catchError((error) => {
-              this.logService.logErrorToConsole(
-                "Failed to load contacts",
-                error
-              );
-              this.logService.logErrorToServer({ error }).subscribe();
-              return of(loadContactsFailure({ error: error.message }));
-            })
-          )
+  loadContacts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadContacts),
+      mergeMap(() =>
+        this.contactService.getContacts().pipe(
+          map((contacts) => loadContactsSuccess({ contacts })),
+          catchError((error) => {
+            this.logService.logErrorToConsole("Failed to load contacts", error);
+            this.logService.logErrorToServer({ error }).subscribe();
+            return of(loadContactsFailure({ error: error.message }));
+          })
         )
       )
-    );
+    )
+  );
 
-    this.addContact$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(addContact),
-        mergeMap(({ contact }) => {
-          return this.contactService.addContact(contact).pipe(
-            map((contact) => addContactSuccess({ contact })),
-            tap({
-              next: () =>
-                this.showSnackBar("Contact added successfully!", "Close"),
-            }),
-            catchError((error) => {
-              this.logService.logErrorToConsole("Failed to add contact", error);
-              this.logService.logErrorToServer({ error }).subscribe();
-              return of(addContactFailure({ error: error.message }));
-            })
-          );
-        })
-      )
-    );
+  addContact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addContact),
+      mergeMap(({ contact }) => {
+        return this.contactService.addContact(contact).pipe(
+          map((contact) => addContactSuccess({ contact })),
+          tap(() => this.showSnackBar("Contact added successfully!", "Close")),
+          catchError((error) => {
+            this.logService.logErrorToConsole("Failed to add contact", error);
+            this.logService.logErrorToServer({ error }).subscribe();
+            return of(addContactFailure({ error: error.message }));
+          })
+        );
+      })
+    )
+  );
 
-    this.updateContact$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(updateContact),
-        mergeMap(({ contact }) => {
-          return this.contactService.updateContact(contact).pipe(
-            map((contact) => updateContactSuccess({ contact })),
-            tap({
-              next: () =>
-                this.showSnackBar("Contact updated successfully!", "Close"),
-            }),
-            catchError((error) => {
-              this.logService.logErrorToConsole(
-                "Failed to update contact",
-                error
-              );
-              this.logService.logErrorToServer({ error }).subscribe();
-              return of(updateContactFailure({ error: error.message }));
-            })
-          );
-        })
-      )
-    );
+  updateContact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateContact),
+      mergeMap(({ contact }) => {
+        return this.contactService.updateContact(contact).pipe(
+          map((contact) => updateContactSuccess({ contact })),
+          tap(() =>
+            this.showSnackBar("Contact updated successfully!", "Close")
+          ),
+          catchError((error) => {
+            this.logService.logErrorToConsole(
+              "Failed to update contact",
+              error
+            );
+            this.logService.logErrorToServer({ error }).subscribe();
+            return of(updateContactFailure({ error: error.message }));
+          })
+        );
+      })
+    )
+  );
 
-    this.deleteContact$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(deleteContact),
-        mergeMap((contact) => {
-          return this.contactService.deleteContact(contact.id).pipe(
-            map((id) => deleteContactSuccess(id)),
-            tap({
-              next: () =>
-                this.showSnackBar("Contact deleted successfully!", "Close"),
-            }),
-            catchError((error) => {
-              this.logService.logErrorToConsole(
-                "Failed to delete contact",
-                error
-              );
-              this.logService.logErrorToServer({ error }).subscribe();
-              return of(deleteContactFailure({ error: error.message }));
-            })
-          );
-        })
-      )
-    );
-  }
+  deleteContact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteContact),
+      mergeMap(({ id }) => {
+        return this.contactService.deleteContact(id).pipe(
+          map(() => deleteContactSuccess({ id })),
+          tap(() =>
+            this.showSnackBar("Contact deleted successfully!", "Close")
+          ),
+          catchError((error) => {
+            this.logService.logErrorToConsole(
+              "Failed to delete contact",
+              error
+            );
+            this.logService.logErrorToServer({ error }).subscribe();
+            return of(deleteContactFailure({ error: error.message }));
+          })
+        );
+      })
+    )
+  );
 
-  private showSnackBar(
-    message: string,
-    action: string,
-    type: "success" | "error" = "success"
-  ) {
+  private showSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 4000,
-      panelClass: type === "success" ? "snackbar-success" : "snackbar-error",
+      panelClass: "snackbar-success",
     });
   }
 }
