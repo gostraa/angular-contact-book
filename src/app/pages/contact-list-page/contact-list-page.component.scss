@@ -20,6 +20,6 @@ button {
   color: black;
 }
 
-::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-  background-color: rgb(255, 255, 255) !important;
+.input-wrapper {
+  --mat-sys-surface-variant: transparent;
 }
