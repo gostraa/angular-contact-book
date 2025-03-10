@@ -18,7 +18,6 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatCardModule } from "@angular/material/card";
 import { UuidService } from "../../contact/services/uuid.service";
 import { ContactState } from "../../contact/reducers/contact.reducer";
-import { Contact } from "../../contact/contact.model";
 @Component({
   selector: "app-contact-form",
   imports: [

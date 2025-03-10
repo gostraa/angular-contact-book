@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ContactService } from "../../contact/services/contact.service";
-import { Contact } from "../../contact/contact.model";
 import { CommonModule } from "@angular/common";
 import {
   FormControl,

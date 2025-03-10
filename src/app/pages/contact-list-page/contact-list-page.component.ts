@@ -19,7 +19,7 @@ import { FormsModule } from "@angular/forms";
 import { map, Observable } from "rxjs";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { PhoneFormatPipe } from "../../pipes/phone-format.pipe";
-import { Router, RouterModule } from "@angular/router";
+import { RouterModule } from "@angular/router";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
