@@ -38,19 +38,15 @@ export class ContactEditComponent implements OnInit {
   private router: Router = inject(Router);
   private contactService: ContactService = inject(ContactService);
   private contactId: string | null = null;
-  private contact!: Contact;
-  editForm!: FormGroup;
+
+  editForm: FormGroup = new FormGroup({
+    firstName: new FormControl<string>("", [Validators.required]),
+    lastName: new FormControl<string>(""),
+    phone: new FormControl<string>("", [Validators.required]),
+    email: new FormControl<string>("", [Validators.required, Validators.email]),
+  });
 
   ngOnInit(): void {
-    this.editForm = new FormGroup({
-      firstName: new FormControl<string>("", [Validators.required]),
-      lastName: new FormControl<string>(""),
-      phone: new FormControl<string>("", [Validators.required]),
-      email: new FormControl<string>("", [
-        Validators.required,
-        Validators.email,
-      ]),
-    });
     this.contactId = this.route.snapshot.paramMap.get("id");
     if (this.contactId) this.loadContact();
   }
@@ -60,12 +56,11 @@ export class ContactEditComponent implements OnInit {
       this.contactService
         .getContactById(this.contactId)
         .subscribe((contact) => {
-          this.contact = contact;
           this.editForm.setValue({
-            firstName: this.contact.firstName,
-            lastName: this.contact.lastName || "",
-            phone: this.contact.phone,
-            email: this.contact.email,
+            firstName: contact.firstName,
+            lastName: contact.lastName || "",
+            phone: contact.phone,
+            email: contact.email,
           });
         });
     }
@@ -75,7 +70,7 @@ export class ContactEditComponent implements OnInit {
     if (this.editForm.valid) {
       this.store.dispatch(
         updateContact({
-          contact: { id: this.contact.id, ...this.editForm.value },
+          contact: { id: this.contactId, ...this.editForm.value },
         })
       );
       this.router.navigate(["/contacts"]);

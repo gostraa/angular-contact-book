@@ -39,19 +39,12 @@ export class ContactFormComponent {
   private store = inject(Store<ContactState>);
   private router: Router = inject(Router);
   private uuidService: UuidService = inject(UuidService);
-  contactForm: FormGroup;
-
-  constructor() {
-    this.contactForm = new FormGroup({
-      firstName: new FormControl<string>("", [Validators.required]),
-      lastName: new FormControl<string>(""),
-      phone: new FormControl<string>("", [Validators.required]),
-      email: new FormControl<string>("", [
-        Validators.required,
-        Validators.email,
-      ]),
-    });
-  }
+  contactForm: FormGroup = new FormGroup({
+    firstName: new FormControl<string>("", [Validators.required]),
+    lastName: new FormControl<string>(""),
+    phone: new FormControl<string>("", [Validators.required]),
+    email: new FormControl<string>("", [Validators.required, Validators.email]),
+  });
 
   onSubmit() {
     if (this.contactForm.valid) {
