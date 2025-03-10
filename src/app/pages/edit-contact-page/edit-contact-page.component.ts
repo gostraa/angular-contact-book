@@ -31,7 +31,7 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   templateUrl: "./edit-contact-page.component.html",
   styleUrl: "./edit-contact-page.component.scss",
 })
-export class ContactEditComponent implements OnInit {
+export default class ContactEditComponent implements OnInit {
   private store = inject(Store<ContactState>);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);

@@ -34,7 +34,7 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   templateUrl: "./add-contact-page.component.html",
   styleUrl: "./add-contact-page.component.scss",
 })
-export class ContactFormComponent {
+export default class ContactFormComponent {
   private store = inject(Store<ContactState>);
   private router: Router = inject(Router);
   private uuidService: UuidService = inject(UuidService);
