@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ContactEditComponent } from "./edit-contact-page.component";
+import ContactEditComponent from "./edit-contact-page.component";
 import { Store } from "@ngrx/store";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";

@@ -93,7 +93,9 @@ describe("ContactEffects", () => {
       const action = loadContacts();
       const error = { message: "Failed to load contacts" };
       const completion = loadContactsFailure({ error: error.message });
-      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToServer.and.returnValue(
+        of({ message: "Log received successfully" })
+      );
       logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.getContacts.and.returnValue(throwError(() => error));
@@ -132,7 +134,9 @@ describe("ContactEffects", () => {
 
       const error = { message: "Failed to add contact" };
       const completion = addContactFailure({ error: error.message });
-      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToServer.and.returnValue(
+        of({ message: "Log received successfully" })
+      );
       logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.addContact.and.returnValue(throwError(() => error));
@@ -171,7 +175,9 @@ describe("ContactEffects", () => {
 
       const error = { message: "Failed to update contact" };
       const completion = updateContactFailure({ error: error.message });
-      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToServer.and.returnValue(
+        of({ message: "Log received successfully" })
+      );
       logService.logErrorToConsole.and.stub();
 
       actions$ = hot("-a-", { a: action });
@@ -210,7 +216,9 @@ describe("ContactEffects", () => {
       const action = deleteContact({ id: mockContact.id });
       const error = { message: "Failed to delete contact" };
       const completion = deleteContactFailure({ error: error.message });
-      logService.logErrorToServer.and.returnValue(of(null));
+      logService.logErrorToServer.and.returnValue(
+        of({ message: "Log received successfully" })
+      );
       logService.logErrorToConsole.and.stub();
       actions$ = hot("-a-", { a: action });
       contactService.deleteContact.and.returnValue(throwError(() => error));
