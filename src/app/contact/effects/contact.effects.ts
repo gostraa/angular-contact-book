@@ -38,8 +38,9 @@ export class ContactEffects {
           map((contacts) => loadContactsSuccess({ contacts })),
           catchError((error) => {
             this.logService.logErrorToConsole("Failed to load contacts", error);
-            this.logService.logErrorToServer({ error }).subscribe();
-            return of(loadContactsFailure({ error: error.message }));
+            return this.logService
+              .logErrorToServer({ error })
+              .pipe(map(() => loadContactsFailure({ error: error.message })));
           })
         )
       )
@@ -55,8 +56,9 @@ export class ContactEffects {
           tap(() => this.showSnackBar("Contact added successfully!", "Close")),
           catchError((error) => {
             this.logService.logErrorToConsole("Failed to add contact", error);
-            this.logService.logErrorToServer({ error }).subscribe();
-            return of(addContactFailure({ error: error.message }));
+            return this.logService
+              .logErrorToServer({ error })
+              .pipe(map(() => addContactFailure({ error: error.message })));
           })
         );
       })
@@ -77,8 +79,9 @@ export class ContactEffects {
               "Failed to update contact",
               error
             );
-            this.logService.logErrorToServer({ error }).subscribe();
-            return of(updateContactFailure({ error: error.message }));
+            return this.logService
+              .logErrorToServer({ error })
+              .pipe(map(() => updateContactFailure({ error: error.message })));
           })
         );
       })
@@ -99,8 +102,9 @@ export class ContactEffects {
               "Failed to delete contact",
               error
             );
-            this.logService.logErrorToServer({ error }).subscribe();
-            return of(deleteContactFailure({ error: error.message }));
+            return this.logService
+              .logErrorToServer({ error })
+              .pipe(map(() => deleteContactFailure({ error: error.message })));
           })
         );
       })
