@@ -14,11 +14,13 @@ import { Contact } from "../contact.model";
 export interface ContactState {
   contacts: Contact[];
   error: string | null;
+  loaded: boolean;
 }
 
 export const initialState: ContactState = {
   contacts: [],
   error: null,
+  loaded: false,
 };
 
 export const contactReducer = createReducer(
@@ -26,10 +28,12 @@ export const contactReducer = createReducer(
   on(loadContactsSuccess, (state, { contacts }) => ({
     ...state,
     contacts,
+    loaded: true,
   })),
   on(loadContactsFailure, (state, { error }) => ({
     ...state,
     error,
+    loaded: false,
   })),
   on(deleteContactSuccess, (state, { id }) => ({
     ...state,

@@ -13,3 +13,8 @@ export const selectError = createSelector(
   selectContactState,
   (state) => state.error
 );
+
+export const selectContactsLoaded = createSelector(
+  selectContactState,
+  (state: ContactState) => state.loaded
+);

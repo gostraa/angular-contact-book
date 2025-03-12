@@ -7,6 +7,7 @@ import {
 import { Store } from "@ngrx/store";
 import {
   selectAllContacts,
+  selectContactsLoaded,
   selectError,
 } from "../../contact/selectors/contact.selectors";
 import {
@@ -14,7 +15,7 @@ import {
   loadContacts,
 } from "../../contact/actions/contact.actions";
 import { Contact } from "../../contact/contact.model";
-import { AsyncPipe, CommonModule } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {
   BehaviorSubject,
@@ -72,14 +73,16 @@ export class ContactListComponent implements OnInit {
   ngOnInit(): void {
     this.contacts$ = this.store.select(selectAllContacts);
     this.error$ = this.store.select(selectError);
-    this.store.dispatch(loadContacts());
+    this.store.select(selectContactsLoaded).subscribe((loaded) => {
+      if (!loaded) this.store.dispatch(loadContacts());
+    });
 
     combineLatest([
       this.contacts$.pipe(map((contacts) => contacts || [])),
       this.searchText$.pipe(
-        startWith(""),
         debounceTime(300),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        startWith("")
       ),
     ])
       .pipe(takeUntil(this.destroy$))
