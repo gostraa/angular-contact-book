@@ -8,11 +8,10 @@
   <div class="search">
     <mat-form-field class="input-wrapper">
       <mat-label>Search By Name</mat-label>
-      <input matInput [(ngModel)]="searchText" />
+      <input matInput [(ngModel)]="searchText" (ngModelChange)="searchTextChanged($event)" />
     </mat-form-field>
   </div>
-  <mat-table row-item-label-text-color="black" [dataSource]="filterContacts(contacts$ | async)"
-    class="mat-elevation-z8">
+  <mat-table row-item-label-text-color="black" [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="Name">
       <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
       <mat-cell *matCellDef="let contact">{{ contact | fullName }} </mat-cell>

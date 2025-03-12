@@ -16,13 +16,23 @@ import {
 import { Contact } from "../../contact/contact.model";
 import { AsyncPipe, CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { map, Observable } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  Observable,
+  startWith,
+  Subject,
+  takeUntil,
+} from "rxjs";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { PhoneFormatPipe } from "../../pipes/phone-format.pipe";
 import { RouterModule } from "@angular/router";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
-import { MatTableModule } from "@angular/material/table";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ContactState } from "../../contact/reducers/contact.reducer";
@@ -34,7 +44,6 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   imports: [
     CommonModule,
     FormsModule,
-    AsyncPipe,
     FullNamePipe,
     PhoneFormatPipe,
     MatButtonModule,
@@ -49,16 +58,46 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
 export class ContactListComponent implements OnInit {
   private store = inject(Store<ContactState>);
   private sortAscending: boolean = false;
+  private searchText$ = new BehaviorSubject<string>("");
+  private destroy$ = new Subject<void>();
 
   contacts$!: Observable<Contact[]>;
+  filteredContacts$!: Observable<Contact[]>;
   error$!: Observable<any>;
+
   searchText: string = "";
+  dataSource = new MatTableDataSource<Contact>([]);
   displayedColumns: string[] = ["Name", "Phone", "Email", "Actions"];
 
   ngOnInit(): void {
     this.contacts$ = this.store.select(selectAllContacts);
     this.error$ = this.store.select(selectError);
     this.store.dispatch(loadContacts());
+
+    combineLatest([
+      this.contacts$.pipe(map((contacts) => contacts || [])),
+      this.searchText$.pipe(
+        startWith(""),
+        debounceTime(300),
+        distinctUntilChanged()
+      ),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([contacts, searchText]) => {
+        this.dataSource.data = contacts;
+
+        this.dataSource.filterPredicate = (
+          contact: Contact,
+          filter: string
+        ) => {
+          if (!filter) return true;
+          return `${contact.firstName} ${contact.lastName}`
+            .toLowerCase()
+            .includes(filter.toLowerCase());
+        };
+
+        this.dataSource.filter = searchText;
+      });
   }
 
   deleteContact(id: string) {
@@ -86,5 +125,13 @@ export class ContactListComponent implements OnInit {
         )
       )
     );
+  }
+  searchTextChanged(text: string): void {
+    this.searchText$.next(text);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
