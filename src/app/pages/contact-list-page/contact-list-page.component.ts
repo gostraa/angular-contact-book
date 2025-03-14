@@ -63,7 +63,6 @@ export class ContactListComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   contacts$!: Observable<Contact[]>;
-  filteredContacts$!: Observable<Contact[]>;
   error$!: Observable<any>;
 
   searchText: string = "";
@@ -73,12 +72,15 @@ export class ContactListComponent implements OnInit {
   ngOnInit(): void {
     this.contacts$ = this.store.select(selectAllContacts);
     this.error$ = this.store.select(selectError);
-    this.store.select(selectContactsLoaded).subscribe((loaded) => {
-      if (!loaded) this.store.dispatch(loadContacts());
-    });
+    this.store
+      .select(selectContactsLoaded)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loaded: boolean) => {
+        if (!loaded) this.store.dispatch(loadContacts());
+      });
 
     combineLatest([
-      this.contacts$.pipe(map((contacts) => contacts || [])),
+      this.contacts$,
       this.searchText$.pipe(
         debounceTime(300),
         distinctUntilChanged(),

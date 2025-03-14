@@ -12,7 +12,7 @@ import {
 import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { catchError, map, mergeMap, tap } from "rxjs/operators";
+import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
 
 import {
   loadContacts,
@@ -33,15 +33,12 @@ export class ContactEffects {
   loadContacts$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadContacts),
-      mergeMap(() =>
+      switchMap(() =>
         this.contactService.getContacts().pipe(
           map((contacts) => loadContactsSuccess({ contacts })),
-          catchError((error) => {
-            this.logService.logErrorToConsole("Failed to load contacts", error);
-            return this.logService
-              .logErrorToServer({ error })
-              .pipe(map(() => loadContactsFailure({ error: error.message })));
-          })
+          catchError((error) =>
+            of(loadContactsFailure({ error: error.message }))
+          )
         )
       )
     )
@@ -50,7 +47,7 @@ export class ContactEffects {
   addContact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addContact),
-      mergeMap(({ contact }) => {
+      switchMap(({ contact }) => {
         return this.contactService.addContact(contact).pipe(
           map((contact) => addContactSuccess({ contact })),
           tap(() => this.showSnackBar("Contact added successfully!", "Close")),
@@ -68,7 +65,7 @@ export class ContactEffects {
   updateContact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(updateContact),
-      mergeMap(({ contact }) => {
+      switchMap(({ contact }) => {
         return this.contactService.updateContact(contact).pipe(
           map((contact) => updateContactSuccess({ contact })),
           tap(() =>
@@ -91,7 +88,7 @@ export class ContactEffects {
   deleteContact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(deleteContact),
-      mergeMap(({ id }) => {
+      switchMap(({ id }) => {
         return this.contactService.deleteContact(id).pipe(
           map(() => deleteContactSuccess({ id })),
           tap(() =>
