@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Contact } from "../contact.model";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: "root",
@@ -13,6 +14,9 @@ export class ContactService {
   getContacts(): Observable<Contact[]> {
     return this.http.get<Contact[]>(this.apiUrl);
   }
+  contacts = toSignal<Contact[], Contact[]>(this.getContacts(), {
+    initialValue: [] as Contact[],
+  });
 
   getContactById(id: string): Observable<Contact> {
     return this.http.get<Contact>(`${this.apiUrl}${id}`);

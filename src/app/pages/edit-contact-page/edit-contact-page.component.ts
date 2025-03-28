@@ -17,6 +17,7 @@ import { MatCardModule } from "@angular/material/card";
 import { Store } from "@ngrx/store";
 import { updateContact } from "../../contact/actions/contact.actions";
 import { ContactState } from "../../contact/reducers/contact.reducer";
+import { switchMap, tap } from "rxjs";
 
 @Component({
   selector: "app-contact-edit",
@@ -31,12 +32,11 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   templateUrl: "./edit-contact-page.component.html",
   styleUrl: "./edit-contact-page.component.scss",
 })
-export default class ContactEditComponent implements OnInit {
+export default class ContactEditComponent {
   private store = inject(Store<ContactState>);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private router: Router = inject(Router);
   private contactService: ContactService = inject(ContactService);
-  private contactId: string | null = null;
 
   editForm: FormGroup = new FormGroup({
     firstName: new FormControl<string>("", [Validators.required]),
@@ -45,31 +45,24 @@ export default class ContactEditComponent implements OnInit {
     email: new FormControl<string>("", [Validators.required, Validators.email]),
   });
 
-  ngOnInit(): void {
-    this.contactId = this.route.snapshot.paramMap.get("id");
-    if (this.contactId) this.loadContact();
-  }
-
-  loadContact() {
-    if (this.contactId) {
-      this.contactService
-        .getContactById(this.contactId)
-        .subscribe((contact) => {
-          this.editForm.setValue({
-            firstName: contact.firstName,
-            lastName: contact.lastName || "",
-            phone: contact.phone,
-            email: contact.email,
-          });
-        });
-    }
-  }
+  contact$ = this.route.params.pipe(
+    switchMap(({ id }) => this.contactService.getContactById(id)),
+    tap((contact) => {
+      this.editForm.setValue({
+        firstName: contact.firstName,
+        lastName: contact.lastName || "",
+        phone: contact.phone,
+        email: contact.email,
+      });
+    })
+  );
 
   onSubmit() {
     if (this.editForm.valid) {
+      const contactId = this.route.snapshot.paramMap.get("id");
       this.store.dispatch(
         updateContact({
-          contact: { id: this.contactId, ...this.editForm.value },
+          contact: { id: contactId, ...this.editForm.value },
         })
       );
       this.router.navigate(["/contacts"]);

@@ -22,11 +22,12 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
-  map,
+  filter,
   Observable,
   startWith,
   Subject,
   takeUntil,
+  tap,
 } from "rxjs";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { PhoneFormatPipe } from "../../pipes/phone-format.pipe";
@@ -37,6 +38,7 @@ import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ContactState } from "../../contact/reducers/contact.reducer";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 @Component({
   selector: "app-contact-list",
   templateUrl: "./contact-list-page.component.html",
@@ -56,11 +58,10 @@ import { ContactState } from "../../contact/reducers/contact.reducer";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactListComponent implements OnInit {
+export class ContactListComponent {
   private store = inject(Store<ContactState>);
   private sortAscending: boolean = false;
   private searchText$ = new BehaviorSubject<string>("");
-  private destroy$ = new Subject<void>();
 
   contacts$!: Observable<Contact[]>;
   error$!: Observable<any>;
@@ -69,15 +70,17 @@ export class ContactListComponent implements OnInit {
   dataSource = new MatTableDataSource<Contact>([]);
   displayedColumns: string[] = ["Name", "Phone", "Email", "Actions"];
 
-  ngOnInit(): void {
+  constructor() {
     this.contacts$ = this.store.select(selectAllContacts);
     this.error$ = this.store.select(selectError);
     this.store
       .select(selectContactsLoaded)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((loaded: boolean) => {
-        if (!loaded) this.store.dispatch(loadContacts());
-      });
+      .pipe(
+        filter((loaded) => !loaded),
+        tap(() => this.store.dispatch(loadContacts())),
+        takeUntilDestroyed()
+      )
+      .subscribe();
 
     combineLatest([
       this.contacts$,
@@ -87,7 +90,7 @@ export class ContactListComponent implements OnInit {
         startWith("")
       ),
     ])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(([contacts, searchText]) => {
         this.dataSource.data = contacts;
 
@@ -121,22 +124,13 @@ export class ContactListComponent implements OnInit {
 
   toggleSort(): void {
     this.sortAscending = !this.sortAscending;
-    this.contacts$ = this.contacts$.pipe(
-      map((contacts) =>
-        [...contacts].sort((a, b) =>
-          this.sortAscending
-            ? a.firstName.localeCompare(b.firstName)
-            : b.firstName.localeCompare(a.firstName)
-        )
-      )
+    this.dataSource.data = [...this.dataSource.data].sort((a, b) =>
+      this.sortAscending
+        ? a.firstName.localeCompare(b.firstName)
+        : b.firstName.localeCompare(a.firstName)
     );
   }
   searchTextChanged(text: string): void {
     this.searchText$.next(text);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

@@ -1,52 +1,54 @@
-<form [formGroup]="editForm" (ngSubmit)="onSubmit()">
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>Edit Contact</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Name</mat-label>
-                    <input matInput id="firstName" formControlName="firstName" />
-                    <mat-error *ngIf="editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched">
-                        Name is required
-                    </mat-error>
-                </mat-form-field>
-            </div>
+<ng-container *ngIf="contact$ | async as contact">
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Edit Contact</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="form-field">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Name</mat-label>
+                        <input matInput id="firstName" formControlName="firstName" />
+                        <mat-error *ngIf="editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched">
+                            Name is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Surname</mat-label>
-                    <input matInput id="lastName" formControlName="lastName" />
-                    <mat-error *ngIf="editForm.get('lastName')?.invalid && editForm.get('lastName')?.touched">
-                        Surname is required
-                    </mat-error>
-                </mat-form-field>
-            </div>
+                <div class="form-field">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Surname</mat-label>
+                        <input matInput id="lastName" formControlName="lastName" />
+                        <mat-error *ngIf="editForm.get('lastName')?.invalid && editForm.get('lastName')?.touched">
+                            Surname is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Phone</mat-label>
-                    <input matInput id="phone" formControlName="phone" />
-                    <mat-error *ngIf="editForm.get('phone')?.invalid && editForm.get('phone')?.touched">
-                        Phone is required (10 digits)
-                    </mat-error>
-                </mat-form-field>
-            </div>
+                <div class="form-field">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Phone</mat-label>
+                        <input matInput id="phone" formControlName="phone" />
+                        <mat-error *ngIf="editForm.get('phone')?.invalid && editForm.get('phone')?.touched">
+                            Phone is required (10 digits)
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Email</mat-label>
-                    <input matInput id="email" formControlName="email" type="email" />
-                    <mat-error *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched">
-                        Email is required and should be valid
-                    </mat-error>
-                </mat-form-field>
-            </div>
+                <div class="form-field">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput id="email" formControlName="email" type="email" />
+                        <mat-error *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched">
+                            Email is required and should be valid
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-            <button mat-fab extended type="submit" [disabled]="editForm.invalid">
-                Save
-            </button>
-        </mat-card-content>
-    </mat-card>
-</form>
+                <button mat-fab extended type="submit" [disabled]="editForm.invalid">
+                    Save
+                </button>
+            </mat-card-content>
+        </mat-card>
+    </form>
+</ng-container>
